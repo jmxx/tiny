@@ -6,7 +6,7 @@ int main(int argc, char** argv)
 {
   std::cout << "---Mesero---" <<std::endl;
 
-  Mesero m = Mesero();
-  
-  m.listen();
+  //Mesero m = Mesero();
+  Mesero::createApp()->listen();
+  //m.listen();
 }

@@ -144,9 +144,18 @@ std::string Socket::RecvLine() {
   }
   return well_read;
 }*/
-/*
-int Socket::writeData(std::string str)
+
+void Socket::SendBytes(const std::string& s) {
+  std::cout << "Enviando: " << s << std::endl;
+  write(this->socketDesc, s.c_str(), s.length());
+}
+
+void Socket::SendLine(std::string str)
 {
+  std::cout << "Enviando: " << str << std::endl;
+  str += '\n';
+  write(this->socketDesc, str.c_str(), str.length());
+  /*
   char* data = (char*)str.c_str();
   int length = str.length();
   int written = 0;
@@ -159,6 +168,7 @@ int Socket::writeData(std::string str)
   while (written < length)
   {
     aux = write(this->socketDesc, data + written, length - written);
+    std::cout << "Escrito " << aux << std::endl;
     if (aux > 0)
     {
       /*
@@ -183,6 +193,6 @@ int Socket::writeData(std::string str)
 
   /*
   * Devolvemos el total de caracteres leidos
-  
-  return written;
-}*/
+  */
+  //return written;
+}

@@ -2,12 +2,15 @@
 #define MESERO_H
 
 #include <iostream>
+#include <sstream>
 
 #include "SocketServer.h"
 
 class Mesero
 {
 public:
+  static Mesero* createApp(void);
+  
   /*
    * Definimos RequestFn, un puntero a una funcion que recibe como parametro
    * un puntero a un objeto HttpRequest y retorna void.
@@ -30,6 +33,7 @@ private:
   Socket *client;
   
   SocketServer *server;
+  std::string ServerName;
 };
 
 
