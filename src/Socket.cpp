@@ -93,7 +93,7 @@ std::string Socket::RecvLine() {
 //      return "";
 //      }
     }
-
+    //std::cout << r <<std::endl;
     line += r;
     if (r == '\n')  return line;
   }
@@ -146,16 +146,18 @@ std::string Socket::RecvLine() {
 }*/
 
 void Socket::SendBytes(const std::string& s) {
-  std::cout << "Enviando: " << s << std::endl;
-  write(this->socketDesc, s.c_str(), s.length());
+  //std::cout << "Enviando: " << s << std::endl;
+  //write(this->socketDesc, s.c_str(), s.length());
+  std::string str(s);
+  this->SendLine(str);
 }
 
-void Socket::SendLine(std::string str)
+int Socket::SendLine(std::string str)
 {
   std::cout << "Enviando: " << str << std::endl;
   str += '\n';
-  write(this->socketDesc, str.c_str(), str.length());
-  /*
+  //write(this->socketDesc, str.c_str(), str.length());
+  
   char* data = (char*)str.c_str();
   int length = str.length();
   int written = 0;
@@ -168,13 +170,13 @@ void Socket::SendLine(std::string str)
   while (written < length)
   {
     aux = write(this->socketDesc, data + written, length - written);
-    std::cout << "Escrito " << aux << std::endl;
+    //std::cout << "Escrito " << aux << std::endl;
     if (aux > 0)
     {
       /*
       * Si hemos conseguido escribir caracteres, se actualiza la
       * variable written
-      
+      */
       written = written + aux;
     }
     else
@@ -183,7 +185,7 @@ void Socket::SendLine(std::string str)
       * Si se ha cerrado el socket, devolvemos el numero de caracteres
       * leidos.
       * Si ha habido error, devolvemos -1
-      
+      */
       if (aux == 0)
         return written;
       else
@@ -194,5 +196,5 @@ void Socket::SendLine(std::string str)
   /*
   * Devolvemos el total de caracteres leidos
   */
-  //return written;
+  return written;
 }

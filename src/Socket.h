@@ -23,7 +23,7 @@ public:
   void Listen();
   void Close();
   
-  void SendLine(std::string data);
+  int SendLine(std::string data);
   void SendBytes(const std::string& data);
   
   //int SendData(std::string data);

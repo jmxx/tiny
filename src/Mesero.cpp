@@ -1,63 +1,61 @@
 #include "Mesero.h"
 
-Mesero* Mesero::createApp(void)
+Mesero::ReqFunction Mesero::reqFunction = 0;
+
+/*
+ * Metodo estático para crear una App.
+ */
+Mesero* Mesero::createApp(ReqFunction reqFn)
 {
-  return new Mesero();
+  return new Mesero(reqFn);
 }
 
 Mesero::Mesero()
 {
   std::cout << "Constructor Mesero" << std::endl;
-  this->ServerName = "Mesero";
-  this->port = 8005;
-  this->server = new SocketServer(this->port);
+  this->init();
 }
 
-/*Mesero::Mesero(RequestFunction reqFn, unsigned int port)
+Mesero::Mesero(ReqFunction reqFn)
 {
+  reqFunction = reqFn;
+}
 
-}*/
-
-int Mesero::listen()
+void Mesero::init()
 {
-  time_t ltime;
-  time(&ltime);
-  tm* gmt= gmtime(&ltime);
-  char* asctime_remove_nl = asctime(gmt);
-  asctime_remove_nl[24] = 0;
+  this->ServerName = "Mesero";
+}
+
+void Mesero::listen()
+{
+  this->listen(DEFAULT_PORT);
+}
+
+void Mesero::listen(int port)
+{
+  this->port = port;
+  this->serverSocket = new SocketServer(this->port);
+  //this->request = new HttpRequest();
+  this->run();
+}
+
+void Mesero::run()
+{
   std::string line;
-  std::stringstream str_str;
   
   std::cout << "Listen Mesero at " << this->port << std::endl;
-  this->client = this->server->Accept();
-  if (this->client == NULL) {
+  this->request = new HttpRequest(this->serverSocket->Accept());
+  /*if (this->client == NULL) {
     std::cout << "No se puede abrir socket de cliente\n";
     //exit(-1);
-  }
-  line = this->client->RecvLine();
-  str_str << line.size();
-  std::cout<< "Recibiendo: " << line << std::endl;
-  this->client->SendBytes("HTTP/1.1 ");
-
-  /*if (! req.auth_realm_.empty() ) {
-    this->client->SendLine("401 Unauthorized");
-    this->client->SendBytes("WWW-Authenticate: Basic Realm=\"");
-    this->client->SendBytes(req.auth_realm_);
-    this->client->SendLine("\"");
-  }
-  else {
-    this->client->SendLine(req.status_);
   }*/
-  this->client->SendLine(std::string("Date: ") + asctime_remove_nl + " GMT");
-  this->client->SendLine(std::string("Server: ") + this->ServerName);
-  this->client->SendLine("Connection: close");
-  this->client->SendLine("Content-Type: text/html; charset=ISO-8859-1");
-  this->client->SendLine("Content-Length: "  + str_str.str());
-  this->client->SendLine("");
-  this->client->SendLine(line);
-
-  this->client->Close();
-  
-  
+  line = this->request->data();
+  std::cout<< "Recibiendo: " << line << std::endl;
+  reqFunction(this->request);
   std::cout << "Enviado: " << std::endl;
+}
+
+bool Mesero::isValidPort()
+{
+
 }
