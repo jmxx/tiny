@@ -1,18 +1,16 @@
 #include <iostream>
 
-#include "src/Mesero.h"
+#include "src/Tiny.h"
 #include "src/HttpRequest.h"
 
-void App(HttpRequest* request)
+void App(HttpRequest* req, HttpResponse* res)
 {
-  request->write("HOLA MUNDO FROM APP.<br>");
-  request->write("HOLA MUNDO FROM APP.<br>");
-  request->end("HOLA MUNDO FROM APP.");
+  req->write("HOLA MUNDO FROM APP.<br>");
+  req->write("HOLA MUNDO FROM APP.<br>");
+  req->end("HOLA MUNDO FROM APP.");
 }
 
 int main(int argc, char** argv)
 {
-  //Mesero m = Mesero();
-  Mesero::createApp(App)->listen(8005);
-  //m.listen();
+  Tiny::createApp(App)->listen(8005);
 }

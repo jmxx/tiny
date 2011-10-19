@@ -26,3 +26,14 @@ Socket* SocketServer::Accept()
   */
   return new Socket(clientDesc, client);
 }
+
+std::string SocketServer::RecvHeaders()
+{
+  std::string line;
+  std::string headers;
+  do {
+    line = this->RecvLine();
+    headers += line;
+  } while (line != "\r\n");
+  return headers;
+}

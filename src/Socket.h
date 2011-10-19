@@ -31,7 +31,6 @@ public:
   
   std::string RecvData();
   std::string RecvLine();
-  std::string RecvHeaders();
   
   // Puerto de escucha del Socket.
   unsigned int port;

@@ -1,36 +1,37 @@
-#ifndef MESERO_H
-#define MESERO_H
+#ifndef TINY_H
+#define TINY_H
 
 #include <iostream>
 
 #include "HttpRequest.h"
+#include "HttpResponse.h"
 
 #define DEFAULT_PORT  8005
 
 
 
-class Mesero
+class Tiny
 {
 public:
   /*
    * Definimos RequestFn, un puntero a una funcion que recibe como parametro
    * un puntero a un objeto HttpRequest y retorna void.
    */
-  typedef void (*ReqFunction) (HttpRequest* req);
+  typedef void (*ReqFunction) (HttpRequest* req, HttpResponse* res);
   
   /*
-   * Método estático que retorna un objecto Mesero.
+   * Método estático que retorna un objecto Tiny.
    */
-  static Mesero* createApp(ReqFunction reqFn);
+  static Tiny* createApp(ReqFunction reqFn);
   
   /*
-   *Constructor de Mesero.
+   *Constructor de Tiny.
    * @reqFn Funcion que se ejecutara en cada peticion.
    * @port Puerto de escucha.
    */
-  //Mesero(ReqFunction reqFn, unsigned int port);
-  Mesero();
-  Mesero(ReqFunction reqFn);
+  //Tiny(ReqFunction reqFn, unsigned int port);
+  Tiny();
+  Tiny(ReqFunction reqFn);
   void listen();
   void listen(int port);
 
@@ -44,10 +45,11 @@ private:
   unsigned int port;
   
   HttpRequest   *request;
+  HttpResponse  *response;
   
   SocketServer *serverSocket;
   std::string ServerName;
 };
 
 
-#endif /* MESERO_H */
+#endif /* TINY_H */

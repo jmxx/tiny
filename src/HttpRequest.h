@@ -5,6 +5,7 @@
 #include <sstream>
 
 #include "SocketServer.h"
+#include "UrlHelper.h"
 #include "Utils.h"
 
 class HttpRequest
@@ -13,7 +14,7 @@ public:
 
   HttpRequest(Socket* socket);
 
-  std::string data();
+  void processRequest();
   void write(std::string response);
   void end(std::string response);
   void end();
@@ -26,6 +27,7 @@ public:
   std::string       acceptLanguage;
   std::string       acceptEncoding;
   std::string       userAgent;
+  std::string       charset;
   
   std::string       status;
   std::string       response;
@@ -34,6 +36,7 @@ private:
   std::string       headers;
   std::string       dataReceived;
   void setHeaders();
+  void setRequest();
 };
 
 #endif /* HTTP_REQUEST_H */
