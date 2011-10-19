@@ -12,7 +12,7 @@ void HttpRequest::setHeaders()
 
 std::string HttpRequest::data()
 {
-  dataReceived = this->socket->RecvLine();
+  dataReceived = this->socket->RecvHeaders();
   return dataReceived;
 }
 

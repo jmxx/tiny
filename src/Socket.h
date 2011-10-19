@@ -29,8 +29,9 @@ public:
   //int SendData(std::string data);
   //int SendLine(std::string data);
   
-  //std::string RecvData();
+  std::string RecvData();
   std::string RecvLine();
+  std::string RecvHeaders();
   
   // Puerto de escucha del Socket.
   unsigned int port;

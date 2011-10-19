@@ -50,7 +50,7 @@ void Mesero::run()
     //exit(-1);
   }*/
   line = this->request->data();
-  std::cout<< "Recibiendo: " << line << std::endl;
+  std::cout<< "Recibiendo: \n" << line << std::endl;
   reqFunction(this->request);
   std::cout << "Enviado: " << std::endl;
 }

@@ -10,7 +10,6 @@ Socket::Socket(const Socket &socket)
 Socket::Socket(int port)
 {
   this->port = port;
-  std::cout << "Created Socket at " << this->port <<std::endl;
   this->createInetSocket();
 }
 
@@ -30,7 +29,6 @@ Socket::Socket(int descriptor, struct sockaddr &socket_s)
 
 void Socket::Listen()
 {
-  std::cout << "Ready to listen at " << this->port <<std::endl;
   if (::listen(this->socketDesc, 1) == -1) {
     std::cout << "¡Oops, ha ocurrido un error al escuchar!" <<std::endl;
     this->Close();
@@ -65,7 +63,6 @@ int Socket::bindSocket()
     this->Close();
     return -1;
   }
-  std::cout << "Binding Socket: yes!" << std::endl;
 }
 
 void Socket::Close()
@@ -93,57 +90,45 @@ std::string Socket::RecvLine() {
 //      return "";
 //      }
     }
-    //std::cout << r <<std::endl;
     line += r;
     if (r == '\n')  return line;
   }
 }
 
-/*int Socket::RecvData(std::string str)
+std::string Socket::RecvHeaders()
 {
-  char* data = (char*)str.c_str();
-  int length = str.length();
-  int well_read = 0;
-  int aux = 0;
+  std::string line;
+  std::string headers;
+  do {
+    line = this->RecvLine();
+    headers += line;
+  } while (line != "\r\n");
+  return headers;
+}
 
-  if ((this->socketDesc == -1) || (data == NULL) || (length < 1) ) {
-    return -1;
+std::string Socket::RecvData()
+{
+  std::string ret;
+  char buf[200];
+  while (1) {
+    
+    /*u_long arg = 0;
+    if (ioctlsocket(s_, FIONREAD, &arg) != 0)
+      break;
+
+    if (arg == 0)
+      break;
+
+    if (arg > 1024) arg = 1024;*/
+    int rv = read(this->socketDesc, buf, 200/*arg*/);
+    if (rv <= 0) break;
+    std::string t;
+
+    t.assign (buf, rv);
+    ret += t;
   }
-  
-  while (well_read < length) {
-    aux = read(this->socketDesc, data + well_read, length - well_read);
-    if (aux > 0) {
-      well_read = well_read + aux;
-    } else {
-      if (aux == 0) {
-        return well_read;
-      } else if (aux < 0) {
-        /*
-         * En caso de error, la variable errno nos indica el tipo
-         * de error. 
-         * El error EINTR se produce si ha habido alguna
-         * interrupcion del sistema antes de leer ningun dato. No
-         * es un error realmente.
-         * El error EGAIN significa que el socket no esta disponible
-         * de momento, que lo intentemos dentro de un rato.
-         * Ambos errores se tratan con una espera de 100 microsegundos
-         * y se vuelve a intentar.
-         * El resto de los posibles errores provocan que salgamos de 
-         * la funcion con error.
-         
-        switch (errno) {
-          case EINTR:
-          case EAGAIN:
-            usleep (100);
-            break;
-          default:
-            return -1;
-        }
-      }
-    }
-  }
-  return well_read;
-}*/
+  return ret;
+}
 
 void Socket::SendBytes(const std::string& s) {
   //std::cout << "Enviando: " << s << std::endl;
@@ -154,7 +139,6 @@ void Socket::SendBytes(const std::string& s) {
 
 int Socket::SendLine(std::string str)
 {
-  std::cout << "Enviando: " << str << std::endl;
   str += '\n';
   //write(this->socketDesc, str.c_str(), str.length());
   
@@ -170,7 +154,6 @@ int Socket::SendLine(std::string str)
   while (written < length)
   {
     aux = write(this->socketDesc, data + written, length - written);
-    //std::cout << "Escrito " << aux << std::endl;
     if (aux > 0)
     {
       /*

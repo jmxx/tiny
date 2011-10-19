@@ -12,8 +12,6 @@ void App(HttpRequest* request)
 
 int main(int argc, char** argv)
 {
-  std::cout << "---Mesero---" <<std::endl;
-
   //Mesero m = Mesero();
   Mesero::createApp(App)->listen(8005);
   //m.listen();
