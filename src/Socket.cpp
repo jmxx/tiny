@@ -1,52 +1,42 @@
 #include "Socket.h"
 
+Socket Socket::CreateTCPSocket(int port)
+{
+  return Socket(AF_INET, SOCK_STREAM, port);
+}
+
+Socket Socket::CreateUDPSocket(int port)
+{
+  return Socket(AF_INET, SOCK_DGRAM, port);
+}
+
 Socket::Socket(const Socket &socket)
 {
-  this->domain = socket.domain;
-  this->port = socket.port;
-  this->type = socket.type;
+  this->domain = socket.getDomain();
+  this->port = socket.getPort();
+  this->type = socket.getType();
+
 }
 
-Socket::Socket(int port)
+Socket::Socket(int d, int t, unsigned int p) :
+  domain(d), type(t), port (p)
 {
-  this->port = port;
-  this->createInetSocket();
+  init();
 }
 
-Socket::Socket(int domain, int type, unsigned int port)
+Socket::Socket(int descriptor, struct sockaddr &socket_s) :
+  socketDesc(descriptor)
 {
-  this->domain = domain;
-  this->type = type;
-  this->port = port;
-}
-
-Socket::Socket(int descriptor, struct sockaddr &socket_s)
-{
-  this->socketDesc = descriptor;
-  this->port = ntohs(((struct sockaddr_in*)&socket_s)->sin_port);
+  this->port = ::ntohs(((struct sockaddr_in*)&socket_s)->sin_port);
   this->domain = (&socket_s)->sa_family;
 }
 
-void Socket::Listen()
+void Socket::init()
 {
-  if (::listen(this->socketDesc, 1) == -1) {
-    std::cout << "¡Oops, ha ocurrido un error al escuchar!" <<std::endl;
-    this->Close();
+  this->socketDesc = ::socket(domain, type, 0);
+  if (this->bindSocket() == -1) {
+    std::cout << "Ha ocurrido un error asociando el Socket." << std::endl;
   }
-}
-
-int Socket::createInetSocket()
-{
-  this->socketDesc = socket(AF_INET, SOCK_STREAM, 0);
-  bindSocket();
-  return this->socketDesc;
-}
-
-int Socket::createUnixSocket()
-{
-  this->socketDesc =  socket(AF_UNIX, SOCK_STREAM, 0);
-  bindSocket();
-  return this->socketDesc;
 }
 
 int Socket::bindSocket()
@@ -60,14 +50,24 @@ int Socket::bindSocket()
   socketAddres.sin_addr.s_addr = INADDR_ANY;
   
   if (bind(this->socketDesc, (struct sockaddr *)&socketAddres, sizeof(socketAddres)) == -1) {
-    this->Close();
+    std::cout << "+++Ha ocurrido un error asociando el Socket." << this->socketDesc << std::endl;
+    this->close();
     return -1;
+  }
+  return 1;
+}
+
+void Socket::listen()
+{
+  if (::listen(this->socketDesc, 1) == -1) {
+    std::cout << "¡Oops, ha ocurrido un error al escuchar!" <<std::endl;
+    this->close();
   }
 }
 
-void Socket::Close()
+void Socket::close()
 {
-  close(this->socketDesc);
+  ::close(this->socketDesc);
 }
 
 std::string Socket::RecvLine() {
@@ -95,10 +95,10 @@ std::string Socket::RecvLine() {
   }
 }
 
-std::string Socket::RecvData()
+std::string Socket::RecvData(int bufferSize)
 {
   std::string ret;
-  char buf[200];
+  char buf[bufferSize];
   while (1) {
     
     /*u_long arg = 0;
@@ -109,7 +109,7 @@ std::string Socket::RecvData()
       break;
 
     if (arg > 1024) arg = 1024;*/
-    int rv = read(this->socketDesc, buf, 200/*arg*/);
+    int rv = read(this->socketDesc, buf, bufferSize/*arg*/);
     if (rv <= 0) break;
     std::string t;
 
@@ -119,11 +119,11 @@ std::string Socket::RecvData()
   return ret;
 }
 
-void Socket::SendBytes(const std::string& s) {
+int Socket::SendBytes(const std::string& s) {
   //std::cout << "Enviando: " << s << std::endl;
   //write(this->socketDesc, s.c_str(), s.length());
   std::string str(s);
-  this->SendLine(str);
+  return this->SendLine(str);
 }
 
 int Socket::SendLine(std::string str)
@@ -169,4 +169,20 @@ int Socket::SendLine(std::string str)
   * Devolvemos el total de caracteres leidos
   */
   return written;
+}
+
+
+int Socket::getPort() const
+{
+  return this->port;
+}
+  
+int Socket::getDomain() const
+{
+  return this->domain;
+}
+  
+int Socket::getType() const
+{
+  return this->type;
 }

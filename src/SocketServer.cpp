@@ -1,7 +1,9 @@
 #include "SocketServer.h"
 
-SocketServer::SocketServer(int port) : Socket(port)  {
-  this->Listen();
+SocketServer::SocketServer(int port) : 
+  Socket(AF_INET, SOCK_STREAM, port)
+{
+  this->listen();
 }
 
 Socket* SocketServer::Accept()
@@ -18,9 +20,11 @@ Socket* SocketServer::Accept()
   */
   clientLength = sizeof(client);
   clientDesc = ::accept(this->socketDesc, &client, &clientLength);
-  if (clientDesc == -1)
+  if (clientDesc == -1) {
     return NULL;
+  }
   
+  std::cout << "---Ha ocurrido un error asociando el Socket." << clientDesc << std::endl;
   /*
   * Se devuelve el socketDesc en el que esta "enchufado" el client.
   */

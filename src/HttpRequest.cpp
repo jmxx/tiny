@@ -110,5 +110,5 @@ void HttpRequest::end()
   this->socket->SendLine("Content-Length: "  + resp_length.str());
   this->socket->SendLine("");
   this->socket->SendLine(this->response);
-  this->socket->Close();
+  this->socket->close();
 }
