@@ -1,46 +1,28 @@
 #ifndef SOCKET_H
 #define SOCKET_H
 
-#include <sys/types.h>
-#include <sys/socket.h>
-#include <sys/un.h>
-#include <netinet/in.h>
 #include <unistd.h>
 #include <errno.h>
 #include <string>
-
 #include <iostream>
+
+#include "SocketInclude.h"
 
 class Socket
 {
 public:
-  /**
-   * Crea un Socket TCP
-   * @param port  Puerto de escucha del Socket TCP
-   * @return      Socket tipo SOCK_STREAM
-   */
-  static Socket CreateTCPSocket(int port);
-  
-  /**
-   * Crea un Socket UDP
-   * @param port  Puerto de escucha del Socket
-   * @return      Socket tipo SOCK_DGRAM
-   */
-  static Socket CreateUDPSocket(int port);
-  
-  /**
-   * Constructor por copia.
-   * @param socket  Socket base.
-   */
-  Socket(const Socket&);
-  
   /**
    * Constructor Socket
    * @param doamin  Dominio del Socket [AF_INET, AF_UNIX]
    * @param type    Tipo del Socket [SOCK_STREAM, SOCK_DGRAM]
    * @param port    Puerto de escucha del Socket
    */
-  Socket(int domain, int type, unsigned int port);
+  Socket(int domain, int type, port_t port);
+  
+  /**
+   * Destructor de Socket
+   */
+  virtual ~Socket() {;}
   
   /**
    * Pone a escuchar al Socket
@@ -57,30 +39,35 @@ public:
    * @param data  Cadena que será enviada
    * @return      Retorna -1 si hubo algún error al enviar
    */
-  int SendLine(std::string data);
+  int sendLine(std::string data);
   
   /**
    * 
    */
-  int SendBytes(const std::string& data);
+  int sendBytes(const std::string& data);
   
   /**
    * Reciba una cadena de caracteres hasta encontrar un salto de línea [\n]
    * @return    String
    */
-  std::string RecvLine();
+  std::string recvLine();
   
   /**
    * Recibe tantos caracteres especificados por bufferSize
    * @param bufferSize  Tamaño de buffer
    */
-  std::string RecvData(int bufferSize);
+  std::string recvData(int bufferSize);
+  
+  /**
+   * Obtiene el descriptor del Socket
+   */
+  int getSocket() const;
   
   /**
    * Obtiene el puerto de escucha del Socket
    * @return  Puerto asociado al socket
    */
-  int getPort() const;
+  port_t getPort() const;
   
   /**
    * Obtiene el dominio del Socket
@@ -94,10 +81,21 @@ public:
    */
   int getType() const;
   
+  /**
+   *
+   */
+  socket_t createSocket(int domain, int type);
 protected:
   friend class SocketServer;
   friend class SocketSelect;
-
+  
+  Socket() {}
+  /**
+   * Constructor por copia.
+   * @param socket  Socket base.
+   */
+  Socket(const Socket&);
+  
   /**
    * Constructor de Socket a partir un descriptor y una estructura sockaddr
    * @param desc      Descriptor del Socket
@@ -106,15 +104,15 @@ protected:
   Socket(int desc, struct sockaddr& socket_s);
   
   /*
-   * Identificador del Socket
+   * Descriptor del Socket
    */
-  int socketDesc;
+  socket_t socket_desc;
 
 private:
   /**
    * Inicializa el Socket
    */
-  void init();
+  void Create();
   
   /**
    * Avisa al SO que se ha abierto un socket y se asocie dicho socket.
@@ -123,7 +121,7 @@ private:
   int bindSocket();
 
   /// Puerto de escucha del Socket.
-  unsigned int port;
+  port_t port;
   /// Dominio del Socket [AF_INET, AF_UNIX]
   unsigned int domain;
   /// Tipo de Socket [SOCK_STREAM, SOCK_DGRAM]

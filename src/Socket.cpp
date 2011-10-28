@@ -1,15 +1,5 @@
 #include "Socket.h"
 
-Socket Socket::CreateTCPSocket(int port)
-{
-  return Socket(AF_INET, SOCK_STREAM, port);
-}
-
-Socket Socket::CreateUDPSocket(int port)
-{
-  return Socket(AF_INET, SOCK_DGRAM, port);
-}
-
 Socket::Socket(const Socket &socket)
 {
   this->domain = socket.getDomain();
@@ -31,7 +21,7 @@ Socket::Socket(int descriptor, struct sockaddr &socket_s) :
   this->domain = (&socket_s)->sa_family;
 }
 
-void Socket::init()
+void Socket::create()
 {
   this->socketDesc = ::socket(domain, type, 0);
   if (this->bindSocket() == -1) {
