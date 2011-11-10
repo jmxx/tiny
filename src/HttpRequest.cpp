@@ -22,7 +22,7 @@ void HttpRequest::setHeaders()
   static const std::string user_agent      = "User-Agent: ";
 
   while(1) {
-    line = this->socket->RecvLine();
+    line = this->socket->recvLine();
 
     if (line.empty()) break;
 
@@ -64,7 +64,7 @@ void HttpRequest::setHeaders()
  */
 void HttpRequest::setRequest()
 {
-  std::string line = this->socket->RecvLine();
+  std::string line = this->socket->recvLine();
   
   if (line.empty()) {
     //return 1;
@@ -102,13 +102,13 @@ void HttpRequest::end()
   std::stringstream resp_length;
   resp_length << this->response.size();
 
-  this->socket->SendBytes("HTTP/1.1 ");
-  this->socket->SendLine("Date: " + Utils::getUTCTime());
-  this->socket->SendLine(std::string("Server: Mesero"));
-  this->socket->SendLine("Connection: close");
-  this->socket->SendLine("Content-Type: text/html; charset=ISO-8859-1");
-  this->socket->SendLine("Content-Length: "  + resp_length.str());
-  this->socket->SendLine("");
-  this->socket->SendLine(this->response);
+  this->socket->sendBytes("HTTP/1.1 ");
+  this->socket->sendLine("Date: " + Utils::getUTCTime());
+  this->socket->sendLine(std::string("Server: Mesero"));
+  this->socket->sendLine("Connection: close");
+  this->socket->sendLine("Content-Type: text/html; charset=ISO-8859-1");
+  this->socket->sendLine("Content-Length: "  + resp_length.str());
+  this->socket->sendLine("");
+  this->socket->sendLine(this->response);
   this->socket->close();
 }

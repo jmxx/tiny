@@ -5,6 +5,9 @@
 #include <errno.h>
 #include <string>
 #include <iostream>
+#include <stdlib.h>
+#include <stdio.h>
+#include <fcntl.h> 
 
 #include "SocketInclude.h"
 
@@ -34,6 +37,12 @@ public:
    */
   void close();
   
+  
+  /**
+   * Hace al Socket no-bloqueante
+   */
+  int setNonBlocking();
+  
   /**
    * Envia una cadena tipo String
    * @param data  Cadena que será enviada
@@ -61,7 +70,7 @@ public:
   /**
    * Obtiene el descriptor del Socket
    */
-  int getSocket() const;
+  SOCKET_t getDescriptor() const;
   
   /**
    * Obtiene el puerto de escucha del Socket
@@ -84,7 +93,7 @@ public:
   /**
    *
    */
-  socket_t createSocket(int domain, int type);
+  SOCKET_t createSocket(int domain, int type);
 protected:
   friend class SocketServer;
   friend class SocketSelect;
@@ -106,13 +115,13 @@ protected:
   /*
    * Descriptor del Socket
    */
-  socket_t socket_desc;
+  SOCKET_t socketDesc;
 
 private:
   /**
    * Inicializa el Socket
    */
-  void Create();
+  void create();
   
   /**
    * Avisa al SO que se ha abierto un socket y se asocie dicho socket.

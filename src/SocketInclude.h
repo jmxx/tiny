@@ -6,16 +6,15 @@
 #include <sys/un.h>
 #include <netinet/in.h>
 
+#define   INVALID_SOCKET    -1
+
 /**
  * Tipo de dato definido para socket
  */
-typedef   int               socket_t
+typedef   int               SOCKET_t;
 /**
  * Tipo de dato definido para puerto
  */
-typedef   unsigned short    port_t
-
-
-#define   INVALID_SOCKET    -1
+typedef   unsigned short    port_t;
 
 #endif /* SOCKETS_INCLUDE_H */

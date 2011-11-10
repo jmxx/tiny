@@ -3,7 +3,8 @@
 
 class HttpResponse
 {
-
+public:
+  HttpResponse(){}
 };
 
 #endif /* HTTP_RESPONSE_H */

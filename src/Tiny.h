@@ -5,50 +5,70 @@
 
 #include "HttpRequest.h"
 #include "HttpResponse.h"
+#include "EpollHandler.h"
+#include "SocketServer.h"
 
 #define DEFAULT_PORT  8005
 
-
+class EpollHandler;
+class SocketServer;
 
 class Tiny
 {
+  friend class EpollHandler;
 public:
   /*
-   * Definimos RequestFn, un puntero a una funcion que recibe como parametro
-   * un puntero a un objeto HttpRequest y retorna void.
+   * Definimos TinyFn, un puntero a una funcion que recibe como parametros
+   * un objeto HttpRequest y un objeto HttpResponse. Retorna void.
    */
-  typedef void (*ReqFunction) (HttpRequest* req, HttpResponse* res);
+  typedef void (*TinyFunction) (HttpRequest req, HttpResponse res);
   
   /*
+   * Crea una aplicación.
    * Método estático que retorna un objecto Tiny.
    */
-  static Tiny* createApp(ReqFunction reqFn);
+  static Tiny createApp(TinyFunction tinyFn);
   
   /*
    *Constructor de Tiny.
-   * @reqFn Funcion que se ejecutara en cada peticion.
+   * @tinyFn Funcion que se ejecutara en cada peticion.
    * @port Puerto de escucha.
    */
-  //Tiny(ReqFunction reqFn, unsigned int port);
+  Tiny(TinyFunction tinyFn, unsigned int port);
   Tiny();
-  Tiny(ReqFunction reqFn);
+  Tiny(TinyFunction tinyFn);
+  
   void listen();
   void listen(int port);
+  
+  SocketServer* Server();
+  int respond();
 
 private:
-  static ReqFunction   reqFunction;
+  //static TinyFunction   tinyFn;
+  TinyFunction   tinyFn;
 
-  bool isValidPort();
-  void run();
+  /**
+   * Inicializa Tiny
+   */
   void init();
   
-  unsigned int port;
+  /**
+   * Una vez configurado, ejecuta Tiny
+   */
+  void run();
   
-  HttpRequest   *request;
-  HttpResponse  *response;
   
-  SocketServer *serverSocket;
-  std::string ServerName;
+  port_t        port;
+  
+  HttpRequest   request;
+  HttpResponse  response;
+  
+  SocketServer  *socketServer;
+  EpollHandler  *epoll;
+  
+  std::string   serverName;
+  std::string   version;
 };
 
 

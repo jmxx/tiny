@@ -4,7 +4,7 @@
 #include <map>
 #include <sstream>
 
-#include "SocketServer.h"
+#include "Socket.h"
 #include "UrlHelper.h"
 #include "Utils.h"
 
@@ -12,6 +12,7 @@ class HttpRequest
 {
 public:
 
+  HttpRequest(){}
   HttpRequest(Socket* socket);
 
   void processRequest();

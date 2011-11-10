@@ -1,29 +1,37 @@
 #include "Tiny.h"
 
-Tiny::ReqFunction Tiny::reqFunction = 0;
+//Tiny::TinyFunction Tiny::tinyFn = 0;
 
 /*
  * Metodo estático para crear una App.
  */
-Tiny* Tiny::createApp(ReqFunction reqFn)
+Tiny Tiny::createApp(TinyFunction tinyFn)
 {
-  return new Tiny(reqFn);
+  return Tiny(tinyFn);
 }
 
 Tiny::Tiny()
 {
-  std::cout << "Constructor Tiny" << std::endl;
-  this->init();
+  INFO("Constructor de Tiny.");
+  init();
 }
 
-Tiny::Tiny(ReqFunction reqFn)
+Tiny::Tiny(TinyFunction _tinyFn) : tinyFn(_tinyFn)
 {
-  reqFunction = reqFn;
+  init();
 }
 
 void Tiny::init()
 {
-  this->ServerName = "Tiny";
+  epoll = 0;
+  serverName = "Tiny Server";
+  version = "0.0.1";
+  INFO("Iniciando Tiny");
+}
+
+SocketServer *Tiny::Server()
+{
+  return socketServer;
 }
 
 void Tiny::listen()
@@ -34,7 +42,8 @@ void Tiny::listen()
 void Tiny::listen(int port)
 {
   this->port = port;
-  this->serverSocket = new SocketServer(this->port);
+  this->socketServer = new SocketServer(this->port); //Escucha
+  epoll = new EpollHandler(this);
   //this->request = new HttpRequest();
   this->run();
 }
@@ -42,23 +51,37 @@ void Tiny::listen(int port)
 void Tiny::run()
 {
   std::string line;
-  
-  std::cout << "Listen Tiny at " << this->port << std::endl;
-  this->request = new HttpRequest(this->serverSocket->Accept());
+  /*
+  INFO("Listen Tiny at " << this->port);
+  this->request = HttpRequest(socketServer->Accept());
   /*if (this->client == NULL) {
     std::cout << "No se puede abrir socket de cliente\n";
     //exit(-1);
-  }*/
-  this->request->processRequest();
-  std::cout<< "Path: " << this->request->path << std::endl;
-  std::cout<< "Method: " << this->request->method << std::endl;
-  std::cout<< "Accept Charset: " << this->request->charset << std::endl;
-  std::cout<< "User Agent: " << this->request->userAgent << std::endl;
-  reqFunction(this->request, this->response);
+  }
+  this->request.processRequest();
+  std::cout<< "Path: " << this->request.path << std::endl;
+  std::cout<< "Method: " << this->request.method << std::endl;
+  std::cout<< "Accept Charset: " << this->request.charset << std::endl;
+  std::cout<< "User Agent: " << this->request.userAgent << std::endl;
+  
+  /**
+   * Ejecuta la función
+   
+  tinyFn(this->request, this->response);
+  */
+  epoll->loop();
   std::cout << "Enviado: " << std::endl;
+  this->socketServer->close();
 }
 
-bool Tiny::isValidPort()
+int Tiny::respond()
 {
-
+  this->request.processRequest();
+  std::cout<< "Path: " << this->request.path << std::endl;
+  std::cout<< "Method: " << this->request.method << std::endl;
+  std::cout<< "Accept Charset: " << this->request.charset << std::endl;
+  std::cout<< "User Agent: " << this->request.userAgent << std::endl;
+  tinyFn(this->request, this->response);
+  INFO("ENVIANDO:");
+  return 1;
 }

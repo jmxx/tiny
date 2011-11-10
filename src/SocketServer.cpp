@@ -1,13 +1,14 @@
 #include "SocketServer.h"
 
 SocketServer::SocketServer(int port) : 
-  Socket(AF_INET, SOCK_STREAM, port)
+  Socket(AF_INET, SOCK_STREAM, (port_t)port)
 {
   this->listen();
 }
 
 Socket* SocketServer::Accept()
 {
+  //this->listen();
   socklen_t clientLength;
   struct sockaddr client;
   int clientDesc;
@@ -21,12 +22,13 @@ Socket* SocketServer::Accept()
   clientLength = sizeof(client);
   clientDesc = ::accept(this->socketDesc, &client, &clientLength);
   if (clientDesc == -1) {
+    std::cout << "---Ha ocurrido un error asociando el Socket." << clientDesc << std::endl;
     return NULL;
   }
   
-  std::cout << "---Ha ocurrido un error asociando el Socket." << clientDesc << std::endl;
+  
   /*
-  * Se devuelve el socketDesc en el que esta "enchufado" el client.
+  * Se devuelve el socket_desc en el que esta "enchufado" el client.
   */
   return new Socket(clientDesc, client);
 }
@@ -36,7 +38,7 @@ std::string SocketServer::RecvHeaders()
   std::string line;
   std::string headers;
   do {
-    line = this->RecvLine();
+    line = this->recvLine();
     headers += line;
   } while (line != "\r\n");
   return headers;

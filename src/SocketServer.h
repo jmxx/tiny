@@ -2,6 +2,8 @@
 
 class SocketServer : public Socket {
 public:
+   
+  SocketServer(){}
   /**
    * Constructor de SocketServer
    */
@@ -10,4 +12,7 @@ public:
   std::string RecvHeaders();
   
   int client;
+
+private:
+
 };
