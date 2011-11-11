@@ -46,6 +46,7 @@ void EpollHandler::init()
 void EpollHandler::loop()
 {
   int maxEvents = 1;
+  int connections = 0;
   while(1) {
     /**
      * Esperendo por un evento
@@ -55,6 +56,7 @@ void EpollHandler::loop()
       ERROR("Error: epoll_wait");
       break;
     } else {
+      INFO("MAX EVENTS " << maxEvents << " CONN: " << ++connections);
       for (int i = 0; i < f_descriptors; i++) {
         /**
          * Evento lanzado por el socket servidor.
@@ -99,7 +101,8 @@ void EpollHandler::loop()
             tiny->request = HttpRequest(p);
             //tiny->request.processRequest();
             ret = tiny->respond();
-            if (ret < 1 && errno != 11) { 
+            if (ret < 1 && errno != 11) {
+              DEBUG("RET: " << ret);
               epoll_ctl(epoll_fd, EPOLL_CTL_DEL, events[i].data.fd, &ev); 
               maxEvents--; 
             } 
@@ -116,39 +119,18 @@ void EpollHandler::loop()
 
 void EpollHandler::add(Socket *socket)
 {
+  //DEBUG("MAP SIZE " << (int)addedSockets.size());
   if (socket->getDescriptor() == INVALID_SOCKET) {
     ERROR("Error, Descriptor invalido.");
     return;
   }
   if (addedSockets.find(socket->getDescriptor()) != addedSockets.end())
   {
-    INFO("Attempt to add socket already in add queue");
+    //NOTICE("Attempt to add socket already in add queue");
     //m_delete.push_back(p);
     return;
   }
   addedSockets[socket->getDescriptor()] = socket;
+  
   //server = socket;
 }
-
-int EpollHandler::handle_message (int new_fd) 
-{ 
-  int MAXBUF = 1024;
-  char buf [MAXBUF + 1]; 
-  int len; 
-  /* Start processing each new connection for data transmission */ 
-  ::bzero (buf, MAXBUF + 1); 
-  /* The client receives the message */ 
-  len = ::recv (new_fd, buf, MAXBUF, 0); 
-  if (len> 0) {
-    buf[2] = '\0';
-    printf ("%d receives the message success: '%s', a total of %d bytes of data \n", new_fd, buf, len); 
-  }
-  else { 
-    if (len <0) 
-      printf("Message receiver failed! Error code is%d, error message is '%s' \n", errno, strerror (errno)); 
-    ::close (new_fd); 
-    return -1;
-  } 
-  /* Handle each new connection for data transmission complete */ 
-  return len; 
-} 

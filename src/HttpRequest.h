@@ -7,6 +7,7 @@
 #include "Socket.h"
 #include "UrlHelper.h"
 #include "Utils.h"
+#include "Logger.h"
 
 class HttpRequest
 {
@@ -14,6 +15,7 @@ public:
 
   HttpRequest(){}
   HttpRequest(Socket* socket);
+  ~HttpRequest();
 
   void processRequest();
   void write(std::string response);

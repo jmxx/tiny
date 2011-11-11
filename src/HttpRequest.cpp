@@ -11,6 +11,11 @@ void HttpRequest::processRequest()
   this->setHeaders();
 }
 
+HttpRequest::~HttpRequest()
+{
+  //DEBUG("Cerrando HTTP REQUEST");
+}
+
 void HttpRequest::setHeaders()
 {
   std::string line;
@@ -110,5 +115,6 @@ void HttpRequest::end()
   this->socket->sendLine("Content-Length: "  + resp_length.str());
   this->socket->sendLine("");
   this->socket->sendLine(this->response);
+  //DEBUG("RESP LENGHT " << resp_length.str());
   this->socket->close();
 }

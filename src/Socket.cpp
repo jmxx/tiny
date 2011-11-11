@@ -92,14 +92,14 @@ int Socket::bindSocket()
 void Socket::listen()
 {
   if (::listen(this->socketDesc, 1) == -1) {
-    std::cout << "¡Oops, ha ocurrido un error al escuchar!" <<std::endl;
+    ERROR("¡Oops, ha ocurrido un error al escuchar!");
     this->close();
   }
 }
 
 void Socket::close()
 {
-  std::cout << "Cerrando Socket" << std::endl;
+  //DEBUG("Cerrando Socket.");
   ::close(this->socketDesc);
 }
 

@@ -53,8 +53,6 @@ protected:
 
   void init();
 private:
-
-  int handle_message (int new_fd);
   static const int MAX_POLL_SIZE = 10;
   
   /* Descriptor del epoll */

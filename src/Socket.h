@@ -10,6 +10,7 @@
 #include <fcntl.h> 
 
 #include "SocketInclude.h"
+#include "Logger.h"
 
 class Socket
 {

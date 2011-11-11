@@ -78,10 +78,10 @@ int Tiny::respond()
 {
   this->request.processRequest();
   std::cout<< "Path: " << this->request.path << std::endl;
-  std::cout<< "Method: " << this->request.method << std::endl;
-  std::cout<< "Accept Charset: " << this->request.charset << std::endl;
-  std::cout<< "User Agent: " << this->request.userAgent << std::endl;
+  //std::cout<< "Method: " << this->request.method << std::endl;
+  //std::cout<< "Accept Charset: " << this->request.charset << std::endl;
+  //std::cout<< "User Agent: " << this->request.userAgent << std::endl;
   tinyFn(this->request, this->response);
-  INFO("ENVIANDO:");
+  //INFO("ENVIANDO:");
   return 1;
 }
